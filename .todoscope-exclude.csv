@@ -1,0 +1,3 @@
+path,reason
+node_modules,dependency cache
+.git,version control internals
