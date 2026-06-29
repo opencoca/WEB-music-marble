@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Marble Simulation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            touch-action: none; /* Prevent scrolling/zooming while tilting */
+        }
+        #canvas {
+            display: block;
+            background: radial-gradient(circle at center, #333 0%, #111 100%);
+        }
+        #ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            pointer-events: none;
+        }
+        #start-btn {
+            pointer-events: auto;
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+            background: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: transform 0.1s;
+        }
+        #start-btn:active {
+            transform: scale(0.95);
+        }
+        #instructions {
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.7;
+            padding: 0 20px;
+        }
+        .hidden {
+            display: none;
+        }
+
+        /* Debug UI */
+        #debug-panel {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #0f0;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #333;
+            pointer-events: none;
+            z-index: 10;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div id="debug-panel">
+        <div id="debug-tilt">Tilt: X=0, Y=0</div>
+        <div id="debug-vel">Vel: X=0, Y=0</div>
+        <div id="debug-pos">Pos: X=0, Y=0</div>
+    </div>
+
+    <div id="ui-overlay">
+        <button id="start-btn">Start Simulation</button>
+        <div id="instructions" class="hidden">Tilt your phone (or use Arrow Keys on Desktop) to move the marble!</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('start-btn');
+        const instructions = document.getElementById('instructions');
+        const debugTilt = document.getElementById('debug-tilt');
+        const debugVel = document.getElementById('debug-vel');
+        const debugPos = document.getElementById('debug-pos');
+
+        let W = window.innerWidth;
+        let H = window.innerHeight;
+
+        // Setup high-DPI canvas
+        function resizeCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            W = window.innerWidth;
+            H = window.innerHeight;
+            canvas.width = W * dpr;
+            canvas.height = H * dpr;
+            canvas.style.width = W + 'px';
+            canvas.style.height = H + 'px';
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform before scaling
+            ctx.scale(dpr, dpr);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Physics variables
+        const ball = {
+            x: W / 2,
+            y: H / 2,
+            vx: 0,
+            vy: 0,
+            radius: 25,
+            color: '#ff3b30'
+        };
+
+        const tilt = { x: 0, y: 0 };
+        const keys = { up: false, down: false, left: false, right: false };
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        const gravityScale = 0.15; 
+        const friction = 0.98;     
+        const bounce = 0.6;        
+
+        // 1. Request Device Orientation permissions (Required for iOS 13+)
+        startBtn.addEventListener('click', async () => {
+            if (!isMobile) {
+                // Desktop fallback
+                setupKeyboardControls();
+                startSimulation();
+                return;
+            }
+
+            if (typeof DeviceOrientationEvent !== 'undefined' && 
+                typeof DeviceOrientationEvent.requestPermission === 'function') {
+                try {
+                    const permission = await DeviceOrientationEvent.requestPermission();
+                    if (permission === 'granted') {
+                        window.addEventListener('deviceorientation', handleOrientation);
+                        startSimulation();
+                    } else {
+                        alert('Permission denied. Cannot access device orientation.');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert('Error requesting device orientation permission.');
+                }
+            } else {
+                window.addEventListener('deviceorientation', handleOrientation);
+                startSimulation();
+            }
+        });
+
+        // Desktop Keyboard Controls
+        function setupKeyboardControls() {
+            window.addEventListener('keydown', (e) => {
+                switch(e.key) {
+                    case 'ArrowUp': keys.up = true; e.preventDefault(); break;
+                    case 'ArrowDown': keys.down = true; e.preventDefault(); break;
+                    case 'ArrowLeft': keys.left = true; e.preventDefault(); break;
+                    case 'ArrowRight': keys.right = true; e.preventDefault(); break;
+                }
+            });
+            window.addEventListener('keyup', (e) => {
+                switch(e.key) {
+                    case 'ArrowUp': keys.up = false; break;
+                    case 'ArrowDown': keys.down = false; break;
+                    case 'ArrowLeft': keys.left = false; break;
+                    case 'ArrowRight': keys.right = false; break;
+                }
+            });
+        }
+
+        function startSimulation() {
+            startBtn.classList.add('hidden');
+            instructions.classList.remove('hidden');
+            setTimeout(() => instructions.classList.add('hidden'), 4000);
+            requestAnimationFrame(gameLoop);
+        }
+
+        // 2. Handle Orientation Data (Mobile)
+        function handleOrientation(event) {
+            if (event.gamma !== null) tilt.x = event.gamma;
+            if (event.beta !== null) tilt.y = event.beta;
+        }
+
+        // 3. Game Loop & Physics Engine
+        function gameLoop() {
+            // Desktop Keyboard Tilt Simulation
+            if (!isMobile) {
+                const tiltSpeed = 1.5;
+                const tiltDecay = 0.9;
+                if (keys.left) tilt.x -= tiltSpeed;
+                if (keys.right) tilt.x += tiltSpeed;
+                if (keys.up) tilt.y -= tiltSpeed;
+                if (keys.down) tilt.y += tiltSpeed;
+
+                // If no keys are pressed, decay tilt back to flat
+                if (!keys.left && !keys.right) tilt.x *= tiltDecay;
+                if (!keys.up && !keys.down) tilt.y *= tiltDecay;
+
+                // Clamp desktop tilt so it doesn't go infinitely high
+                tilt.x = Math.max(-45, Math.min(45, tilt.x));
+                tilt.y = Math.max(-45, Math.min(45, tilt.y));
+            }
+
+            // Apply gravity based on device tilt
+            ball.vx += tilt.x * gravityScale;
+            ball.vy += tilt.y * gravityScale;
+
+            // Apply friction
+            ball.vx *= friction;
+            ball.vy *= friction;
+
+            // Update position
+            ball.x += ball.vx;
+            ball.y += ball.vy;
+
+            // Boundary Collision Detection (Walls)
+            if (ball.x - ball.radius < 0) {
+                ball.x = ball.radius;
+                ball.vx *= -bounce;
+            } else if (ball.x + ball.radius > W) {
+                ball.x = W - ball.radius;
+                ball.vx *= -bounce;
+            }
+
+            if (ball.y - ball.radius < 0) {
+                ball.y = ball.radius;
+                ball.vy *= -bounce;
+            } else if (ball.y + ball.radius > H) {
+                ball.y = H - ball.radius;
+                ball.vy *= -bounce;
+            }
+
+            // Update Debug Info
+            debugTilt.innerText = `Tilt: X=${tilt.x.toFixed(2)}, Y=${tilt.y.toFixed(2)}`;
+            debugVel.innerText = `Vel: X=${ball.vx.toFixed(2)}, Y=${ball.vy.toFixed(2)}`;
+            debugPos.innerText = `Pos: X=${ball.x.toFixed(0)}, Y=${ball.y.toFixed(0)}`;
+
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // 4. Rendering
+        function render() {
+            ctx.clearRect(0, 0, W, H);
+
+            // Draw the Level Indicator (Top Left Corner)
+            drawLevelIndicator(10, 10, 80, 80);
+
+            // Draw Marble
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            
+            const gradient = ctx.createRadialGradient(
+                ball.x - 8, ball.y - 8, 5,
+                ball.x, ball.y, ball.radius
+            );
+            gradient.addColorStop(0, '#ffffff');
+            gradient.addColorStop(0.3, ball.color);
+            gradient.addColorStop(1, '#8b0000');
+            
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+            ctx.stroke();
+        }
+
+        function drawLevelIndicator(x, y, w, h) {
+            const cx = x + w / 2;
+            const cy = y + h / 2;
+
+            // Draw Box
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x, y, w, h);
+
+            // Draw Crosshairs
+            ctx.beginPath();
+            ctx.moveTo(x, cy); ctx.lineTo(x + w, cy); // Horizontal
+            ctx.moveTo(cx, y); ctx.lineTo(cx, y + h); // Vertical
+            ctx.stroke();
+
+            // Center Dot (Idle state)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Calculate Tilt Dot Position
+            // Map -45 to 45 degrees -> 0 to 80 pixels relative to center
+            const maxTilt = 45;
+            let dotX = cx + (tilt.x / maxTilt) * (w / 2);
+            let dotY = cy + (tilt.y / maxTilt) * (h / 2);
+
+            // Clamp dot so it doesn't draw outside the box
+            dotX = Math.max(x, Math.min(x + w, dotX));
+            dotY = Math.max(y, Math.min(y + h, dotY));
+
+            // Draw Tilt Dot
+            ctx.fillStyle = '#0f0'; // Green dot
+            ctx.beginPath();
+            ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#000';
+            ctx.stroke();
+        }
+
+        render();
+    </script>
+</body>
+</html>
