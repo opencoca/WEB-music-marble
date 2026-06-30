@@ -1,5 +1,84 @@
-# Git Flow Repository
+# Marble
 
-This repository is using git-flow with the following branches:
-- master: Production releases
-- develop: Development
+Tilt your phone and a marble rolls across the screen. Each wall plays a wood block tone when the marble hits it -- C5 on the left, D5 on the right, E5 on top, G5 on the bottom. All four notes are from the C major pentatonic scale, so whatever the marble does, it sounds good. Louder hits play louder tones. Touch the screen to create a gravity well the marble orbits around.
+
+Arrow keys work on desktop. Mouse click for the gravity well.
+
+## Why pentatonic?
+
+People keep independently arriving at the pentatonic scale. Chinese classical music uses it. So do West African griot traditions, Celtic folk, Japanese min'yo, Hungarian village songs, Andean huayno, and Indonesian gamelan (the slendro tuning). Bobby McFerrin did [a bit at the 2009 World Science Festival](https://www.youtube.com/watch?v=ne6tB2KiZuk) where he got an audience to sing pentatonic intervals they had never been taught. It worked every time, in every country.
+
+The reason is structural: pentatonic scales skip the half-step intervals that create tension. You cannot play a wrong note. The marble doesn't know what note comes next and it doesn't matter -- physics picks the sequence and the scale makes sure it works.
+
+The four walls are tuned to C5, D5, E5, and G5.
+
+## Why wood block?
+
+Wood-on-wood percussion is one of the oldest sounds humans have organized music around.
+
+The Buddhist muyu (Chinese), mokugyo (Japanese), and moktak (Korean) are wooden fish carved from a single block, hollowed out and struck during sutra chanting to keep rhythm. The fish shape means wakefulness -- fish don't close their eyes. These have been in continuous use for over a thousand years.
+
+The West African balafon is a wooden-key xylophone with gourd resonators underneath, ancestor of the modern marimba. Traditionally pentatonic. The Javanese gambang kayu fills a similar role in gamelan ensembles, tuned to slendro -- five roughly equidistant notes.
+
+Claves are just two pieces of hardwood hit together, but they're the rhythmic spine of Afro-Cuban son and rumba. Everything else in the ensemble locks to the clave pattern.
+
+Slit drums -- hollowed tree trunks with edges carved to different thicknesses for different pitches -- may be the oldest pitched percussion instruments anywhere. Found across Africa, Asia, the Americas, and Oceania.
+
+Our synthesized version uses a tuned sine wave with an inharmonic overtone at 2.7x the fundamental (that ratio gives it a woody, hollow character) plus a short bandpass-filtered noise burst for the initial click.
+
+## Where this comes from
+
+### Gestural electronic instruments
+
+[Suzanne Ciani](https://www.youtube.com/watch?v=eDG1nAtJdrA) spent decades performing on Don Buchla's synthesizers, which deliberately had no piano keyboard. Buchla replaced keys with capacitive touch plates he called a "multi-dimensional kinesthetic input port" -- one touch could transpose, trigger, stop, and modulate all at once. That idea, one gesture controlling many sonic parameters, is what happens when you tilt the phone. You're not pressing a key per note. You're shaping a system.
+
+The Theremin (1920s) got there first in a simpler way: wave your hands near two antennae, one for pitch, one for volume. No physical contact. A phone accelerometer reading your tilt angle is the same basic relationship between body movement and electronic sound.
+
+### Rolling balls that make music
+
+[George Rhoads](https://www.youtube.com/watch?v=ZvyI1AyVjaA) built audiokinetic sculptures starting in the late 1950s. Balls roll down tracks under gravity and strike bells, gongs, and xylophone bars along the way. His [*42nd Street Ballroom*](https://www.youtube.com/watch?v=Ccm1Tj21BS8) (1981) sat in the Port Authority bus terminal in NYC -- commuters watched marbles make music on their way to work. This project is basically a Rhoads sculpture in your pocket.
+
+[Zimoun](https://www.youtube.com/watch?v=f307TEHiKGA), a Swiss artist, takes it further. His piece *294 prepared dc-motors, cork balls, cardboard boxes* (2012) has motors bouncing cork balls against cardboard. He sets the system running and whatever sound comes out is the composition. No score.
+
+Martin Molin's [Wintergatan Marble Machine](https://www.youtube.com/watch?v=IvUU8joBb1Q) (2016) drops 2,000 steel marbles onto vibraphone bars, bass strings, and drums.
+
+### Chance music
+
+Iannis Xenakis composed *Pithoprakta* (1956) by modelling gas molecules bouncing in a container and turning their statistical behavior into an orchestral score. A marble bouncing inside a phone screen is a small-scale version of the same physics.
+
+John Cage's *Music of Changes* (1951) used the I Ching to decide which notes came next. The composer steps aside and lets a system choose. Here, the system is Newtonian mechanics.
+
+The rainstick -- a dried cactus tube with internal pegs, filled with seeds, originally Mapuche -- might be the oldest version of this idea. Tilt the tube and gravity pulls the seeds through obstacles, making sound through collision. That's exactly what happens here, minus the cactus.
+
+### Balls and walls, historically
+
+The Mesoamerican ball game ran for over 3,000 years across Maya, Aztec, and Olmec civilizations. A rubber ball bouncing off stone court walls had cosmological meaning -- the ball was the sun, the court was the cosmos. The courts were acoustic spaces too; parallel stone walls created specific resonances. People have been listening to balls hit walls for a long time.
+
+## Running locally
+
+iOS requires HTTPS for device orientation permissions, so you need a tunnel or a cert:
+
+```bash
+python3 -m http.server 8787 &
+cloudflared tunnel --url http://localhost:8787
+```
+
+Open the tunnel URL on your phone, tap Start Simulation, and tilt.
+
+## Controls
+
+| Input | Effect |
+|---|---|
+| Device tilt | Gravity direction (mobile) |
+| Arrow keys | Simulated tilt (desktop) |
+| Touch / click-hold | Gravity well attractor |
+| Move while holding | Drag the gravity well |
+| Release | Remove gravity well |
+
+## How it sounds
+
+The four walls make a pentatonic chord. Hit a corner and you get two notes in quick succession. Rest against a wall and it goes quiet -- sound only fires on initial contact, not while the marble sits there. Hard hits are loud, gentle ones are soft. Send the marble ricocheting off all four walls and you get a little melody that can't sound bad.
+
+## License
+
+MIT

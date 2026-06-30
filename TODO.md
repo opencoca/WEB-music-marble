@@ -32,6 +32,10 @@ _No items in progress._
   - [ ] Pitch-shift a single sample to the 4 pentatonic notes
   - [ ] Replace Web Audio API synthesis with sample playback
 
+- [ ] **Surface-Bending Gravity**: Replace point-attractor gravity well with rubber-sheet model
+  - [ ] Touch/click warps the plane so the marble rolls toward the depression naturally
+  - [ ] Visual representation of the warped surface (grid distortion or gradient)
+
 ## Bugs
 
 _No known bugs. Use `# BUG:` inline tags to flag defects in source._
