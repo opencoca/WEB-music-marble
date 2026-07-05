@@ -27,14 +27,9 @@ _No items in progress._
 
 ## Backlog
 
-- [ ] **Real Sample Audio**: Swap synthetic wood block sounds for pitched real samples
-  - [ ] Source CC0 wood block samples (e.g. Freesound)
-  - [ ] Pitch-shift a single sample to the 4 pentatonic notes
-  - [ ] Replace Web Audio API synthesis with sample playback
-
-- [ ] **Surface-Bending Gravity**: Replace point-attractor gravity well with rubber-sheet model
-  - [ ] Touch/click warps the plane so the marble rolls toward the depression naturally
-  - [ ] Visual representation of the warped surface (grid distortion or gradient)
+- [ ] **Menu UX Cleanup**: Polish hamburger menu styling, layout, and feel
+  - [ ] Improve touch targets on mobile
+  - [ ] Visual feedback and overall polish
 
 ## Bugs
 
@@ -46,3 +41,9 @@ _No known bugs. Use `# BUG:` inline tags to flag defects in source._
 - [x] **Wood Block Collision Sounds**: Synthetic pentatonic wood block sounds per wall
   - [x] C major pentatonic: C5 (left), D5 (right), E5 (top), G5 (bottom)
   - [x] Velocity-scaled volume
+- [x] **Surface-Bending Gravity**: Gaussian surface warp with pop-on-release
+  - [x] Toggleable between surface bend and point attractor
+  - [x] Contour ring visualization
+- [x] **Real Sample Audio**: Freewavesamples.com woodblock, pitch-shifted per wall
+  - [x] Sample loads on init, toggle enables it
+  - [x] Synthetic fallback always available
