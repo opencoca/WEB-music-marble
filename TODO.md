@@ -1,9 +1,6 @@
 # TODO - Marble Simulation
 
-> **Convention** — Sections below map to kanban columns. Inline source-code
-> tags use the same vocabulary so items stay cross-referenced between this
-> file and the codebase. `KANBAN.canvas` auto-generates from this file and
-> inline tags — do not hand-edit it.
+> **Convention** — Sections below map to kanban columns. Inline source-code tags use the same vocabulary so items stay cross-referenced between this file and the codebase. `KANBAN.canvas` auto-generates from this file and inline tags — do not hand-edit it.
 >
 > | Column      | Markdown section  | Inline tag  |
 > |-------------|-------------------|-------------|
@@ -13,8 +10,7 @@
 > | Bugs        | `## Bugs`         | `# BUG:`    |
 > | Done        | `- [x]` items / `## Done` | —   |
 >
-> `# DEPRECATED:` tags should be tracked as TODO items for removal at the
-> stated version.
+> `# DEPRECATED:` tags should be tracked as TODO items for removal at the stated version.
 
 ## In Progress
 
