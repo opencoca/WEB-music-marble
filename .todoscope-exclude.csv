@@ -1,3 +1,5 @@
 path,reason
 node_modules,dependency cache
 .git,version control internals
+icons,generated media assets
+assets,generated media assets

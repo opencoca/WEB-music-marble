@@ -3,7 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Marble Simulation</title>
+    <title>Marble — a musical marble in your pocket</title>
+    <meta name="description" content="Tilt your phone and a glass marble rolls across the screen. Every wall plays a pentatonic wood block note, so every bounce is music. Touch to bend the surface and pull the marble into orbit.">
+    <meta name="theme-color" content="#1a1a1a">
+    <link rel="canonical" href="https://marble.startr.cloud/">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+    <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Marble">
+    <meta property="og:title" content="Marble — every bounce is a note">
+    <meta property="og:description" content="A musical physics toy. Tilt to roll, walls play pentatonic wood block notes, touch bends gravity itself. Installs to your home screen, works offline, no ads or accounts.">
+    <meta property="og:url" content="https://marble.startr.cloud/">
+    <meta property="og:image" content="https://marble.startr.cloud/assets/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
     <style>
         * {
             margin: 0;
@@ -55,9 +71,127 @@
             font-size: 14px;
             opacity: 0.7;
             padding: 0 20px;
+            width: 100%;
+            max-width: 420px;
         }
         .hidden {
             display: none;
+        }
+        #app-title {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        #app-tagline {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 28px;
+        }
+        #install-chip {
+            pointer-events: auto;
+            margin-top: 24px;
+            padding: 8px 20px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        /* Storefront-style install panel */
+        #install-panel {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 20px;
+        }
+        #install-panel.hidden {
+            display: none;
+        }
+        .install-card {
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+        }
+        .install-card img.app-icon {
+            width: 96px;
+            height: 96px;
+            border-radius: 22px;
+            margin-bottom: 14px;
+        }
+        .install-card h2 {
+            font-size: 28px;
+            margin-bottom: 2px;
+        }
+        .install-card .tagline {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 14px;
+        }
+        .install-card .blurb {
+            font-size: 14px;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 16px;
+        }
+        .install-shots {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .install-shots img {
+            width: 140px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+        .install-facts {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 20px;
+        }
+        #install-go {
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+            background: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        #install-ios-steps {
+            font-size: 14px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.85);
+            text-align: left;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        #install-ios-steps svg {
+            vertical-align: -3px;
+        }
+        #install-dismiss {
+            display: block;
+            margin: 18px auto 0;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            cursor: pointer;
         }
 
         /* Hamburger menu — pure CSS, no JS */
@@ -224,6 +358,13 @@
             <input type="checkbox"/>
             <span></span><span></span><span></span>
             <div id="menu">
+                <div class="menu-section hidden" id="menu-install-section">
+                    <h3>App</h3>
+                    <div class="menu-option" id="menu-install" style="cursor: pointer;">
+                        <span>Install app</span>
+                        <span>›</span>
+                    </div>
+                </div>
                 <div class="menu-section">
                     <h3>Gravity</h3>
                     <div class="menu-option">
@@ -256,24 +397,57 @@
                     <div class="menu-option">
                         <span>Debug info</span>
                         <label class="toggle">
-                            <input type="checkbox" id="toggle-debug" checked/>
+                            <input type="checkbox" id="toggle-debug"/>
                             <span class="slider"></span>
                         </label>
                     </div>
+                </div>
+                <div class="menu-section">
+                    <h3>About</h3>
+                    <a class="menu-option" href="mailto:alexander.somma@gmail.com?subject=Marble%20feedback" style="text-decoration: none;">
+                        <span>Feedback</span>
+                        <span>✉</span>
+                    </a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div id="debug-panel">
+    <div id="debug-panel" style="display: none;">
         <div id="debug-tilt">Tilt: X=0, Y=0</div>
         <div id="debug-vel">Vel: X=0, Y=0</div>
         <div id="debug-pos">Pos: X=0, Y=0</div>
     </div>
 
     <div id="ui-overlay">
-        <button id="start-btn">Start Simulation</button>
-        <div id="instructions" class="hidden">Tilt your phone (or use Arrow Keys on Desktop) to move the marble!</div>
+        <div id="app-title">Marble</div>
+        <div id="app-tagline">Every bounce is a note.</div>
+        <button id="start-btn">Start</button>
+        <div id="instructions">Tilt to roll. Every wall plays a note. Touch and hold to bend the surface and pull the marble into orbit — let go to fling it.</div>
+        <button id="install-chip" class="hidden">Get the app</button>
+    </div>
+
+    <div id="install-panel" class="hidden">
+        <div class="install-card">
+            <img class="app-icon" src="icons/icon-192.png" alt="Marble app icon">
+            <h2>Marble</h2>
+            <div class="tagline">Every bounce is a note.</div>
+            <div class="blurb">A pocket instrument disguised as a physics toy. Tilt to roll; every wall plays a pentatonic wood block note, so no bounce can sound wrong. Touch and hold to bend gravity itself.</div>
+            <div class="install-shots">
+                <img src="assets/screenshot-phone-1.png" alt="Marble orbiting a touch-bent gravity well" loading="lazy" onerror="this.remove()">
+                <img src="assets/screenshot-phone-2.png" alt="Settings menu with sound and gravity toggles" loading="lazy" onerror="this.remove()">
+                <img src="assets/screenshot-desktop-1.png" alt="Marble bouncing between musical walls" loading="lazy" onerror="this.remove()">
+            </div>
+            <div class="install-facts">Works offline · No ads, no accounts · ~80 KB</div>
+            <button id="install-go">Install</button>
+            <div id="install-ios-steps" class="hidden">
+                1. Tap the Share button
+                <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1v12M8 1L4.5 4.5M8 1l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8H1v11h14V8h-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                in Safari's toolbar.<br>
+                2. Scroll and tap <strong>Add to Home Screen</strong>.
+            </div>
+            <button id="install-dismiss">✕ Not now</button>
+        </div>
     </div>
 
     <script>
@@ -317,6 +491,10 @@
         const touching = { left: false, right: false, top: false, bottom: false };
         const keys = { up: false, down: false, left: false, right: false };
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        if (!isMobile) {
+            instructions.textContent = 'Arrow keys to tilt. Click and hold to bend the surface — release to fling the marble.';
+        }
 
         // Gravity well — touch/click warps the surface
         const gravityWell = { active: false, x: 0, y: 0 };
@@ -508,11 +686,13 @@
                         window.addEventListener('deviceorientation', handleOrientation);
                         startSimulation();
                     } else {
-                        alert('Permission denied. Cannot access device orientation.');
+                        instructions.textContent = 'Motion access was denied — enable it in Settings › Safari › Motion & Orientation, or play with touch: press and hold to bend the surface.';
+                        startSimulation(true);
                     }
                 } catch (error) {
                     console.error(error);
-                    alert('Error requesting device orientation permission.');
+                    instructions.textContent = 'Motion access was denied — enable it in Settings › Safari › Motion & Orientation, or play with touch: press and hold to bend the surface.';
+                    startSimulation(true);
                 }
             } else {
                 window.addEventListener('deviceorientation', handleOrientation);
@@ -540,10 +720,15 @@
             });
         }
 
-        function startSimulation() {
+        function startSimulation(keepInstructions = false) {
             startBtn.classList.add('hidden');
+            document.getElementById('app-title').classList.add('hidden');
+            document.getElementById('app-tagline').classList.add('hidden');
+            document.getElementById('install-chip').classList.add('hidden');
             instructions.classList.remove('hidden');
-            setTimeout(() => instructions.classList.add('hidden'), 4000);
+            if (!keepInstructions) {
+                setTimeout(() => instructions.classList.add('hidden'), 4000);
+            }
             requestAnimationFrame(gameLoop);
         }
 
@@ -778,7 +963,70 @@
             document.getElementById('debug-panel').style.display = e.target.checked ? 'block' : 'none';
         });
 
+        // Squoosh-style install experience
+        let deferredPrompt = null;
+        const isStandalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+        const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent)
+                   || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS
+        const installChip = document.getElementById('install-chip');
+        const installPanel = document.getElementById('install-panel');
+        const installMenuSection = document.getElementById('menu-install-section');
+        const installGo = document.getElementById('install-go');
+        const installIosSteps = document.getElementById('install-ios-steps');
+
+        function showInstallEntryPoints() {
+            installMenuSection.classList.remove('hidden');
+            // The overlay chip only makes sense before the simulation starts
+            if (!startBtn.classList.contains('hidden')) {
+                installChip.classList.remove('hidden');
+            }
+        }
+        function hideInstallEverything() {
+            installMenuSection.classList.add('hidden');
+            installChip.classList.add('hidden');
+            installPanel.classList.add('hidden');
+        }
+        function openInstallPanel() {
+            installPanel.classList.remove('hidden');
+        }
+
+        if (!isStandalone) {
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                showInstallEntryPoints();
+            });
+            if (isIOS) {
+                // iOS never fires beforeinstallprompt; show A2HS guidance instead
+                installGo.classList.add('hidden');
+                installIosSteps.classList.remove('hidden');
+                showInstallEntryPoints();
+            }
+        }
+
+        installChip.addEventListener('click', openInstallPanel);
+        document.getElementById('menu-install').addEventListener('click', () => {
+            document.querySelector('#menuToggle input').checked = false; // close the menu
+            openInstallPanel();
+        });
+        installGo.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const choice = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            if (choice.outcome === 'accepted') hideInstallEverything();
+            else installPanel.classList.add('hidden');
+        });
+        document.getElementById('install-dismiss').addEventListener('click', () => {
+            installPanel.classList.add('hidden');
+        });
+        window.addEventListener('appinstalled', hideInstallEverything);
+
         render();
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+        }
     </script>
 </body>
 </html>

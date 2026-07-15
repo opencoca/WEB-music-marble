@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Marble OG card template — render at 1200x630 via `make og`</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: radial-gradient(circle at center, #333 0%, #111 100%);
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        position: relative;
+    }
+    .ring {
+        position: absolute;
+        left: 840px;
+        top: 315px;
+        transform: translate(-50%, -50%);
+        border: 8px solid rgba(100, 180, 255, 0.25);
+        border-radius: 50%;
+    }
+    .ring.r1 { width: 300px; height: 300px; }
+    .ring.r2 { width: 420px; height: 420px; border-color: rgba(100, 180, 255, 0.16); }
+    .ring.r3 { width: 540px; height: 540px; border-color: rgba(100, 180, 255, 0.09); }
+    .marble {
+        position: absolute;
+        left: 840px;
+        top: 315px;
+        width: 200px;
+        height: 200px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #ffffff 0%, #ff3b30 30%, #8b0000 100%);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    }
+    .text {
+        position: absolute;
+        left: 80px;
+        top: 50%;
+        transform: translateY(-50%);
+        max-width: 520px;
+    }
+    .text h1 {
+        font-size: 110px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+    }
+    .text p {
+        font-size: 34px;
+        color: rgba(255, 255, 255, 0.75);
+        line-height: 1.35;
+    }
+    .url {
+        position: absolute;
+        left: 80px;
+        bottom: 48px;
+        font-size: 24px;
+        color: rgba(100, 180, 255, 0.9);
+        letter-spacing: 0.5px;
+    }
+    .note {
+        position: absolute;
+        font-size: 26px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.35);
+    }
+    .note.left   { left: 28px;  top: 50%; transform: translateY(-50%); }
+    .note.right  { right: 28px; top: 40%; }
+    .note.top    { left: 63%;   top: 24px; }
+    .note.bottom { left: 58%;   bottom: 24px; }
+</style>
+</head>
+<body>
+    <div class="ring r3"></div>
+    <div class="ring r2"></div>
+    <div class="ring r1"></div>
+    <div class="marble"></div>
+    <div class="text">
+        <h1>Marble</h1>
+        <p>Every bounce is a note.<br>Tilt to roll. Touch to bend gravity.</p>
+    </div>
+    <div class="url">marble.startr.cloud</div>
+    <div class="note left">C5</div>
+    <div class="note right">D5</div>
+    <div class="note top">E5</div>
+    <div class="note bottom">G5</div>
+</body>
+</html>

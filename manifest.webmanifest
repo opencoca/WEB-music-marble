@@ -1,0 +1,24 @@
+{
+  "name": "Marble",
+  "short_name": "Marble",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#1a1a1a",
+  "description": "Tilt to roll a marble; every wall plays a pentatonic wood block note. Touch to bend the surface into a gravity well.",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "assets/screenshot-phone-1.png", "sizes": "1170x2532", "type": "image/png", "form_factor": "narrow", "label": "Marble orbiting a touch-bent gravity well" },
+    { "src": "assets/screenshot-phone-2.png", "sizes": "1170x2532", "type": "image/png", "form_factor": "narrow", "label": "Start screen — tilt to roll, touch to bend gravity" },
+    { "src": "assets/screenshot-desktop-1.png", "sizes": "1280x800", "type": "image/png", "form_factor": "wide", "label": "Marble bouncing between musical walls" }
+  ],
+  "orientation": "any",
+  "categories": ["games", "music", "entertainment"]
+}

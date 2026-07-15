@@ -9,6 +9,21 @@ Tilt your phone and a marble rolls across the screen. Each wall plays a wood blo
 
 Arrow keys work on desktop. Mouse click for the gravity well.
 
+**Play it at [marble.startr.cloud](https://marble.startr.cloud).**
+
+## Install
+
+Marble is a PWA — it installs to your home screen and works offline.
+
+- **Android / desktop Chrome and Edge**: tap **Get the app** on the start screen (or **Install app** in the hamburger menu), then Install. The browser's own install icon in the address bar works too.
+- **iOS Safari**: tap the Share button, then **Add to Home Screen**. The in-app install panel walks you through it.
+
+## Releasing an update
+
+The service worker (`sw.js`) precaches the app shell with a cache named after its `VERSION` constant. Any change to `index.html`, `samples/`, or the icons requires bumping `VERSION` (e.g. `v1` → `v2`) in `sw.js` — that invalidates the old cache. Users get the new version on their second load after the deploy.
+
+Common tasks are automated in the [Makefile](Makefile) — run `make` to list targets (`make icons`, `make og`, `make serve`, `make verify-prod`, …). The full launch process is documented in [docs/LAUNCH-PLAYBOOK.md](docs/LAUNCH-PLAYBOOK.md).
+
 ## Why pentatonic?
 
 People keep independently arriving at the pentatonic scale. Chinese classical music uses it. So do West African griot traditions, Celtic folk, Japanese min'yo, Hungarian village songs, Andean huayno, and Indonesian gamelan (the slendro tuning). Bobby McFerrin did [a bit at the 2009 World Science Festival](https://www.youtube.com/watch?v=ne6tB2KiZuk) where he got an audience to sing pentatonic intervals they had never been taught. He says it works with every audience he's tried it on, anywhere in the world.
